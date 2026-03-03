@@ -1,0 +1,5 @@
+DebugLog=true
+LotMultiplier=8.0
+Slippage=30
+SlaveMagic=870001
+SlaveChannel=S1

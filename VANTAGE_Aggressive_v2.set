@@ -1,0 +1,8 @@
+DebugLog=true
+SlaveChannel=S2
+RiskPercent=15.0
+DefaultSL_Value=4000.0
+DefaultSL_IsPoints=true
+MasterPipsScale=1000
+Slippage=30
+SlaveMagic=870001
