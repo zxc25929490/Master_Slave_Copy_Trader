@@ -1,0 +1,90 @@
+header_001======  Trading Options  ============
+entry_operation_filter=0
+order_count_mode=2
+max_total_orders=4
+open_mode=2
+open_mode_pending_time=2
+open_mode_expiration_unit=60
+open_mode_pip_range=0.0
+header_002======  Symbol Options  ============
+symbol_filter_mode=2
+symbol_filter_list=
+symbol_detect_auto=true
+symbol_prefix=
+symbol_postfix=
+symbol_mapping="NAS100"="US100.cash","US30"="US30.cash"
+header_003======  SL Options  ============
+stoploss_has_sl_mode=1
+stoploss_no_sl_mode=1
+stoploss_value=2500.0
+header_004======  TP Options  ============
+takeprofit_has_tp_mode=1
+multiple_tp_rule=0
+takeprofit_no_tp_mode=1
+takeprofit1_open=true
+takeprofit1_value=231000.0
+takeprofit2_open=false
+takeprofit2_value=36000.0
+takeprofit3_open=false
+takeprofit3_value=60000.0
+header_006======  Duplicate Signal/Ignore Options  ============
+ignore_check_duplicate=false
+ignore_check_mode=0
+ignore_condition=3
+ignore_action=0
+ignore_freeze_time=10
+ignore_freeze_unit=60
+header_005======  Lot Size Options  ============
+lot_management_mode=0
+lot_calculation_reference=1
+lot_tp1=40.0
+lot_tp2=0.0
+lot_tp3=0.0
+lot_max_size=50.0
+lot_min_size=0.0001
+header_008======  TP Hit Events  ============
+event_hit_tp1_sl_mode=0
+event_hit_tp2_sl_mode=0
+event_hit_tp1_partial_perc=0.0
+event_hit_tp2_partial_perc=0.0
+header_0081======  Skip commands  ============
+telegram_skip_command_signal=true
+telegram_skip_command_update=true
+header_009======  Signal Edit Event  ============
+telegram_update_entry=1
+telegram_update_sl=1
+telegram_update_tp=1
+header_0091======  Signal Breakeven Event  ============
+telegram_update_breakeven=1
+telegram_update_breakeven_offset=0.0
+header_010======  Signal Close Event  ============
+telegram_close_apply=1
+telegram_close_strategy=0
+telegram_partial_value=0.5
+header_012======  Layering  ============
+layer_enable=true
+layer_reference=1
+layer_reverse_operation=false
+layer_lot_multiplier=1.0
+layer_enable_close=true
+header_011======  Trailing SL  ============
+trailing_sl_enable=false
+trailing_sl_trail_at_profit=false
+trailing_sl_mode=1
+trailig_sl_simple_pips=100.0
+trailig_sl_sar_step=0.02
+trailig_sl_sar_max=0.2
+trailig_sl_atr_period=14
+trailig_sl_atr_coef=3.0
+trailing_sl_indi_shift=0
+trailing_sl_indi_tf=0
+header_007======  Advanced Options  ============
+trade_slippage=1
+channel_filter_index=5
+magic_number=78626
+enable_order_comments=true
+ensure_chart_data=true
+check_min_lot_sizes=false
+use_file_based_activation=false
+trade_index_keys_prefix=T2M:TI
+trade_delay_msc=0
