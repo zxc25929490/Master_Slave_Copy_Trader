@@ -1,0 +1,637 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MT4 Copier App</title>
+  <hta:application
+    id="mt4CopierApp"
+    applicationname="MT4 Copier App"
+    border="thin"
+    borderstyle="normal"
+    caption="yes"
+    contextmenu="no"
+    maximizebutton="yes"
+    minimizebutton="yes"
+    scroll="no"
+    singleinstance="yes"
+    sysmenu="yes"
+    windowstate="normal" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #eaf0f8;
+      color: #1c2430;
+    }
+    .app {
+      width: auto;
+      min-width: 920px;
+      margin: 0;
+      padding: 16px;
+    }
+    .header {
+      position: relative;
+      height: 74px;
+      margin-bottom: 14px;
+      padding: 16px 18px;
+      border-radius: 8px;
+      background: #172554;
+      color: #fff;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .subtitle {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #c9d8ff;
+    }
+    .status {
+      position: absolute;
+      right: 0;
+      top: 18px;
+      padding: 7px 12px;
+      background: #16a34a;
+      border: 1px solid #5ee08a;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #fff;
+    }
+    .grid { width: 100%; }
+    .terminal-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .terminal-cell {
+      width: 50%;
+      vertical-align: top;
+    }
+    .terminal-cell.left {
+      padding-right: 6px;
+    }
+    .terminal-cell.right {
+      padding-left: 6px;
+    }
+    .panel {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #cbd7e8;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(20, 30, 45, 0.05);
+    }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1d4ed8;
+    }
+    .hint {
+      margin: -4px 0 10px;
+      font-size: 13px;
+      color: #728096;
+    }
+    select {
+      width: 100%;
+      height: 240px;
+      border: 1px solid #c8d0dc;
+      border-radius: 6px;
+      padding: 6px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+      background: #fbfdff;
+    }
+    .controls {
+      margin: 14px 0;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(20, 30, 45, 0.05);
+    }
+    .summary {
+      margin: 14px 0 0;
+      padding: 11px 12px;
+      background: #fff;
+      border: 1px solid #fed7aa;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #445166;
+    }
+    .result {
+      margin-top: 12px;
+      padding: 12px;
+      background: #eff6ff;
+      border: 1px solid #93c5fd;
+      border-radius: 6px;
+      color: #1e3a8a;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .controls-title {
+      display: inline-block;
+      width: 190px;
+      vertical-align: middle;
+      font-weight: 700;
+      font-size: 18px;
+      color: #9a3412;
+    }
+    .controls-title span {
+      display: block;
+      margin-top: 3px;
+      font-weight: 400;
+      font-size: 13px;
+      color: #728096;
+    }
+    .field {
+      display: inline-block;
+      vertical-align: bottom;
+      margin-right: 12px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      color: #7c2d12;
+      margin-bottom: 4px;
+    }
+    input {
+      height: 38px;
+      border: 1px solid #c8d0dc;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 17px;
+    }
+    .small { width: 110px; }
+    button {
+      height: 40px;
+      border: 1px solid #b9c2d0;
+      border-radius: 6px;
+      padding: 0 22px;
+      background: #fff;
+      color: #1c2430;
+      font-size: 15px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+    .actions {
+      display: inline-block;
+      vertical-align: bottom;
+      margin-left: 14px;
+    }
+    button.primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #fff;
+      font-weight: 700;
+    }
+    button:active {
+      transform: translateY(1px);
+    }
+    textarea {
+      width: 100%;
+      height: 230px;
+      resize: none;
+      border: 1px solid #c8d0dc;
+      border-radius: 8px;
+      padding: 10px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 16px;
+      line-height: 22px;
+      background: #111827;
+      color: #e5f2ff;
+    }
+    .log-title {
+      margin: 0 0 8px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .log-panel {
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(20, 30, 45, 0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>MT4 Copier App</h1>
+      <div class="subtitle">One screen setup for Master, Slave, and CopyBus channels.</div>
+      <div class="status" id="adminStatus"></div>
+    </div>
+
+    <div class="grid">
+      <table class="terminal-table">
+        <tr>
+          <td class="terminal-cell left">
+            <div class="panel">
+              <h2>1. Master Terminal</h2>
+              <div class="hint">Choose the MT4 account that sends trades.</div>
+              <select id="masterList" size="12"></select>
+            </div>
+          </td>
+          <td class="terminal-cell right">
+            <div class="panel">
+              <h2>2. Slave Terminals</h2>
+              <div class="hint">Select one or more MT4 accounts that copy trades.</div>
+              <select id="slaveList" size="12" multiple></select>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="controls">
+      <div class="controls-title">3. Channel Setup<span>Usually keep these defaults.</span></div>
+      <div class="field">
+        <label>Channel Prefix</label>
+        <input id="prefix" class="small" value="S">
+      </div>
+      <div class="field">
+        <label>Start Number</label>
+        <input id="startNumber" class="small" type="number" min="1" value="1">
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="installCopier()">Install / Update</button>
+        <button onclick="refreshTerminals()">Refresh</button>
+        <button onclick="openCopyBus()">Open CopyBus</button>
+        <button onclick="openMasterExperts()">Open Master Experts</button>
+        <button onclick="openSlaveExperts()">Open Slave Experts</button>
+        <button onclick="openSlaveFiles()">Open Slave Files</button>
+      </div>
+      <div class="summary" id="summary">Select a Master and one or more Slaves.</div>
+      <div class="result" id="resultBox">Install result will appear here.</div>
+    </div>
+
+    <div class="log-panel">
+      <div class="log-title">Activity Log</div>
+      <textarea id="log" readonly></textarea>
+    </div>
+  </div>
+
+  <script language="javascript">
+    var shell = new ActiveXObject("WScript.Shell");
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    var appShell = new ActiveXObject("Shell.Application");
+    var terminals = [];
+
+    function appDir() {
+      var path = decodeURIComponent(location.pathname);
+      if (path.charAt(0) == "/") path = path.substr(1);
+      path = path.replace(/\//g, "\\");
+      return fso.GetParentFolderName(path);
+    }
+
+    function log(message) {
+      var box = document.getElementById("log");
+      box.value += message + "\r\n";
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function run(command, wait) {
+      return shell.Run(command, 0, wait);
+    }
+
+    function isAdmin() {
+      try {
+        return run("cmd.exe /c net session >nul 2>&1", true) === 0;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function elevateIfNeeded() {
+      if (isAdmin()) {
+        document.getElementById("adminStatus").innerText = "Running as Administrator";
+        return;
+      }
+      document.getElementById("adminStatus").innerText = "Standard Mode";
+    }
+
+    function ensureFolder(path) {
+      if (!fso.FolderExists(path)) {
+        fso.CreateFolder(path);
+      }
+    }
+
+    function ensureFolderDeep(path) {
+      if (fso.FolderExists(path)) return;
+      var parent = fso.GetParentFolderName(path);
+      if (parent && !fso.FolderExists(parent)) ensureFolderDeep(parent);
+      ensureFolder(path);
+    }
+
+    function basename(path) {
+      if (!path) return "";
+      var parts = path.split("\\");
+      return parts[parts.length - 1] || path;
+    }
+
+    function shortHash(name) {
+      if (!name) return "";
+      if (name.length <= 12) return name;
+      return name.substr(0, 8) + "..." + name.substr(name.length - 4);
+    }
+
+    function readFirstLine(path) {
+      try {
+        if (!fso.FileExists(path)) return "";
+        var file = fso.OpenTextFile(path, 1, false, -1);
+        var line = "";
+        if (!file.AtEndOfStream) line = file.ReadLine();
+        file.Close();
+        return line;
+      } catch (e) {
+        return "";
+      }
+    }
+
+    function scanTerminals() {
+      var root = shell.ExpandEnvironmentStrings("%APPDATA%") + "\\MetaQuotes\\Terminal";
+      var found = [];
+      if (!fso.FolderExists(root)) return found;
+
+      var folders = new Enumerator(fso.GetFolder(root).SubFolders);
+      for (; !folders.atEnd(); folders.moveNext()) {
+        var folder = folders.item();
+        if (folder.Name == "Common") continue;
+
+        var mql4 = folder.Path + "\\MQL4";
+        var files = mql4 + "\\Files";
+        if (!fso.FolderExists(mql4) || !fso.FolderExists(files)) continue;
+
+        var origin = readFirstLine(folder.Path + "\\origin.txt");
+        var originName = basename(origin);
+        var label = originName || folder.Name;
+        label = label + "  |  " + shortHash(folder.Name);
+
+        found.push({
+          label: label,
+          origin: origin,
+          path: folder.Path,
+          filesPath: files,
+          expertsPath: mql4 + "\\Experts",
+          modified: folder.DateLastModified
+        });
+      }
+
+      found.sort(function(a, b) {
+        return new Date(b.modified).getTime() - new Date(a.modified).getTime();
+      });
+      return found;
+    }
+
+    function fillList(select, items) {
+      select.options.length = 0;
+      for (var i = 0; i < items.length; i++) {
+        var option = document.createElement("option");
+        option.text = "#" + (i + 1) + "  " + items[i].label;
+        option.value = i;
+        select.add(option);
+      }
+    }
+
+    function selectedName(select) {
+      if (select.selectedIndex < 0) return "None";
+      return select.options[select.selectedIndex].text;
+    }
+
+    function updateSummary() {
+      var master = selectedName(document.getElementById("masterList"));
+      var slaves = selectedSlaveIndexes();
+      var slaveText = slaves.length === 0 ? "None" : slaves.length + " selected";
+      var masterIndex = document.getElementById("masterList").selectedIndex;
+      var warning = "";
+      for (var i = 0; i < slaves.length; i++) {
+        if (slaves[i] === masterIndex) warning = "    |    WARNING: Master is also selected as Slave";
+      }
+      document.getElementById("summary").innerText = "Master: " + master + "    |    Slaves: " + slaveText + warning;
+    }
+
+    function refreshTerminals() {
+      terminals = scanTerminals();
+      fillList(document.getElementById("masterList"), terminals);
+      fillList(document.getElementById("slaveList"), terminals);
+      if (terminals.length > 0) document.getElementById("masterList").selectedIndex = 0;
+      log("Found " + terminals.length + " MT4 terminal data folder(s).");
+      updateSummary();
+    }
+
+    function copyFile(source, destinationFolder) {
+      ensureFolderDeep(destinationFolder);
+      var dest = destinationFolder + "\\" + fso.GetFileName(source);
+      fso.CopyFile(source, dest, true);
+      return dest;
+    }
+
+    function backupExistingCopyBus(path) {
+      if (!fso.FolderExists(path)) return;
+      var parent = fso.GetParentFolderName(path);
+      var stamp = new Date();
+      var name = "CopyBus.backup_" +
+        stamp.getFullYear() +
+        pad(stamp.getMonth() + 1) +
+        pad(stamp.getDate()) + "_" +
+        pad(stamp.getHours()) +
+        pad(stamp.getMinutes()) +
+        pad(stamp.getSeconds());
+      fso.MoveFolder(path, parent + "\\" + name);
+      log("Existing CopyBus moved to: " + name);
+    }
+
+    function pad(n) {
+      return n < 10 ? "0" + n : "" + n;
+    }
+
+    function createJunction(linkPath, targetPath) {
+      if (fso.FolderExists(linkPath)) {
+        run('cmd.exe /c rmdir "' + linkPath + '"', true);
+      }
+      backupExistingCopyBus(linkPath);
+      var cmd = 'cmd.exe /c mklink /J "' + linkPath + '" "' + targetPath + '"';
+      var code = run(cmd, true);
+      if (code !== 0) throw new Error("mklink failed: " + linkPath);
+      log("Junction created: " + linkPath + " -> " + targetPath);
+    }
+
+    function selectedSlaveIndexes() {
+      var select = document.getElementById("slaveList");
+      var indexes = [];
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].selected) indexes.push(parseInt(select.options[i].value, 10));
+      }
+      return indexes;
+    }
+
+    function openFolder(path) {
+      if (!path) {
+        alert("No folder selected.");
+        return;
+      }
+      ensureFolderDeep(path);
+      shell.Run('explorer.exe "' + path + '"', 1, false);
+    }
+
+    function firstSelectedSlave() {
+      var slaves = selectedSlaveIndexes();
+      if (slaves.length === 0) return null;
+      return terminals[slaves[0]];
+    }
+
+    function openMasterExperts() {
+      var idx = document.getElementById("masterList").selectedIndex;
+      if (idx < 0) return alert("Please choose a Master terminal.");
+      openFolder(terminals[idx].expertsPath);
+    }
+
+    function openSlaveExperts() {
+      var slave = firstSelectedSlave();
+      if (!slave) return alert("Please choose at least one Slave terminal.");
+      openFolder(slave.expertsPath);
+    }
+
+    function openSlaveFiles() {
+      var slave = firstSelectedSlave();
+      if (!slave) return alert("Please choose at least one Slave terminal.");
+      openFolder(slave.filesPath);
+    }
+
+    function isMt4Running() {
+      try {
+        var exec = shell.Exec('cmd.exe /c tasklist /FI "IMAGENAME eq terminal.exe" /NH');
+        var output = exec.StdOut.ReadAll();
+        return output.toLowerCase().indexOf("terminal.exe") >= 0;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function writeSetupResult(text) {
+      var path = appDir() + "\\setup_result.txt";
+      var file = fso.OpenTextFile(path, 2, true, false);
+      file.Write(text);
+      file.Close();
+      return path;
+    }
+
+    function installCopier() {
+      try {
+        if (!isAdmin()) {
+          log("NOTE: Standard Mode. If junction creation fails, close the app and run it as Administrator.");
+        }
+        var base = appDir();
+        var masterEa = base + "\\Master_Copy_Pips.mq4";
+        var slaveEa = base + "\\Slave_Copy_Pips_MT4.mq4";
+        var commonCopyBus = shell.ExpandEnvironmentStrings("%APPDATA%") + "\\MetaQuotes\\Terminal\\Common\\Files\\CopyBus";
+
+        if (!fso.FileExists(masterEa)) throw new Error("Missing " + masterEa);
+        if (!fso.FileExists(slaveEa)) throw new Error("Missing " + slaveEa);
+        if (terminals.length === 0) refreshTerminals();
+
+        var masterIndex = document.getElementById("masterList").selectedIndex;
+        if (masterIndex < 0) throw new Error("Please choose a Master terminal.");
+
+        var slaves = selectedSlaveIndexes();
+        if (slaves.length === 0) throw new Error("Please choose at least one Slave terminal.");
+        for (var same = 0; same < slaves.length; same++) {
+          if (slaves[same] === masterIndex) {
+            throw new Error("Master terminal cannot also be selected as Slave. Please remove it from Slave Terminals.");
+          }
+        }
+
+        var prefix = document.getElementById("prefix").value || "S";
+        var startNumber = parseInt(document.getElementById("startNumber").value, 10);
+        if (isNaN(startNumber) || startNumber < 1) startNumber = 1;
+
+        ensureFolderDeep(commonCopyBus);
+
+        var master = terminals[masterIndex];
+        copyFile(masterEa, master.expertsPath);
+        log("Master EA copied to: " + master.expertsPath);
+
+        var channels = [];
+        var result = [];
+        var resultLinesForUi = [];
+        result.push("MT4 Copier Setup Result");
+        result.push("Generated: " + new Date().toLocaleString());
+        result.push("");
+        result.push("Master:");
+        result.push("  " + master.label);
+        result.push("  Experts: " + master.expertsPath);
+        result.push("");
+        result.push("Slaves:");
+        for (var i = 0; i < slaves.length; i++) {
+          var slave = terminals[slaves[i]];
+          var channel = prefix + (startNumber + i);
+          channels.push(channel);
+          resultLinesForUi.push(slave.label + " => SlaveChannel " + channel);
+          result.push("  " + slave.label);
+          result.push("    SlaveChannel = " + channel);
+          result.push("    Experts: " + slave.expertsPath);
+          result.push("    Files: " + slave.filesPath);
+
+          ensureFolderDeep(commonCopyBus + "\\" + channel);
+          copyFile(slaveEa, slave.expertsPath);
+          log("Slave EA copied to: " + slave.expertsPath);
+          log("Channel folder ready: " + channel);
+
+          createJunction(slave.filesPath + "\\CopyBus", commonCopyBus);
+          log("Set this slave EA input SlaveChannel = " + channel);
+          log("");
+        }
+
+        log("Set Master EA input SlaveChannels = " + channels.join(","));
+        result.push("");
+        result.push("Master EA input:");
+        result.push("  SlaveChannels = " + channels.join(","));
+        result.push("");
+        result.push("CopyBus:");
+        result.push("  " + commonCopyBus);
+        result.push("");
+        result.push("Next steps:");
+        result.push("  1. Attach Master_Copy_Pips to the Master MT4 chart.");
+        result.push("  2. Attach Slave_Copy_Pips_MT4 to each Slave MT4 chart.");
+        result.push("  3. Set the inputs shown above.");
+        result.push("  4. Enable AutoTrading / Algo Trading.");
+
+        var resultText = result.join("\r\n");
+        var resultPath = writeSetupResult(resultText);
+        document.getElementById("resultBox").innerText =
+          "Master SlaveChannels = " + channels.join(",") +
+          "\r\n" + resultLinesForUi.join("\r\n") +
+          "\r\nResult saved: " + resultPath;
+        log("Setup result saved to: " + resultPath);
+
+        if (isMt4Running()) {
+          log("NOTE: MT4 terminal.exe is running. Restart MT4 or refresh Navigator if the EA list does not update.");
+        }
+        log("Done. Restart MT4 or refresh Navigator if the EA list does not update.");
+        alert("Setup completed.");
+      } catch (e) {
+        log("ERROR: " + e.message);
+        alert(e.message);
+      }
+    }
+
+    function openCopyBus() {
+      var commonCopyBus = shell.ExpandEnvironmentStrings("%APPDATA%") + "\\MetaQuotes\\Terminal\\Common\\Files\\CopyBus";
+      ensureFolderDeep(commonCopyBus);
+      shell.Run('explorer.exe "' + commonCopyBus + '"', 1, false);
+    }
+
+    window.onload = function() {
+      window.resizeTo(1160, 820);
+      window.moveTo((screen.availWidth - 1160) / 2, (screen.availHeight - 820) / 2);
+      elevateIfNeeded();
+      refreshTerminals();
+      document.getElementById("masterList").onchange = updateSummary;
+      document.getElementById("slaveList").onchange = updateSummary;
+    };
+  </script>
+</body>
+</html>
