@@ -1,0 +1,14 @@
+SHOW_VERSION=Aggressive Risk BE v3.6 - 2026-06-01
+DebugLog=true
+RiskPercent=15.0
+DefaultSL_Pips=40.0
+RequireMasterSL=true
+AutoReduceLotForMargin=true
+EnableBreakeven=true
+BreakevenTriggerR=1.0
+BreakevenOffsetPips=0.0
+Slippage=30
+SlaveMagic=870001
+SlaveChannel=S2
+SlaveNAS100Symbol=US100.cash
+SlaveUS30Symbol=US30.cash

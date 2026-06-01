@@ -165,6 +165,16 @@
       font-size: 17px;
     }
     .small { width: 110px; }
+    .mode-select {
+      width: 220px;
+      height: 38px;
+      border: 1px solid #c8d0dc;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 15px;
+      background: #fff;
+    }
     button {
       height: 40px;
       border: 1px solid #b9c2d0;
@@ -255,6 +265,13 @@
       <div class="field">
         <label>Start Number</label>
         <input id="startNumber" class="small" type="number" min="1" value="1">
+      </div>
+      <div class="field">
+        <label>Slave Mode</label>
+        <select id="slaveMode" class="mode-select" onchange="updateSummary()">
+          <option value="normal">Normal Copy</option>
+          <option value="aggressive">Aggressive Risk + BE</option>
+        </select>
       </div>
       <div class="actions">
         <button class="primary" onclick="installCopier()">Install / Update</button>
@@ -405,12 +422,15 @@
       var master = selectedName(document.getElementById("masterList"));
       var slaves = selectedSlaveIndexes();
       var slaveText = slaves.length === 0 ? "None" : slaves.length + " selected";
+      var mode = document.getElementById("slaveMode");
+      var modeText = mode.options[mode.selectedIndex].text;
       var masterIndex = document.getElementById("masterList").selectedIndex;
       var warning = "";
       for (var i = 0; i < slaves.length; i++) {
         if (slaves[i] === masterIndex) warning = "    |    WARNING: Master is also selected as Slave";
       }
-      document.getElementById("summary").innerText = "Master: " + master + "    |    Slaves: " + slaveText + warning;
+      document.getElementById("summary").innerText =
+        "Master: " + master + "    |    Slaves: " + slaveText + "    |    Mode: " + modeText + warning;
     }
 
     function refreshTerminals() {
@@ -425,6 +445,13 @@
     function copyFile(source, destinationFolder) {
       ensureFolderDeep(destinationFolder);
       var dest = destinationFolder + "\\" + fso.GetFileName(source);
+      fso.CopyFile(source, dest, true);
+      return dest;
+    }
+
+    function copyFileAs(source, destinationFolder, destinationName) {
+      ensureFolderDeep(destinationFolder);
+      var dest = destinationFolder + "\\" + destinationName;
       fso.CopyFile(source, dest, true);
       return dest;
     }
@@ -526,7 +553,16 @@
         }
         var base = appDir();
         var masterEa = base + "\\Master_Copy_Pips.mq4";
-        var slaveEa = base + "\\Slave_Copy_Pips_MT4.mq4";
+        var masterEx4 = base + "\\Master_Copy_Pips.ex4";
+        var mode = document.getElementById("slaveMode").value;
+        var slaveEaName = mode === "aggressive"
+          ? "Slave_Copy_Pips_MT4_aggressive_risk_be_v3.mq4"
+          : "Slave_Copy_Pips_MT4.mq4";
+        var slaveEx4Name = mode === "aggressive"
+          ? "Slave_Copy_Pips_MT4_aggressive_risk_be_v3.ex4"
+          : "Slave_Copy_Pips_MT4.ex4";
+        var slaveEa = base + "\\" + slaveEaName;
+        var slaveEx4 = base + "\\" + slaveEx4Name;
         var commonCopyBus = shell.ExpandEnvironmentStrings("%APPDATA%") + "\\MetaQuotes\\Terminal\\Common\\Files\\CopyBus";
 
         if (!fso.FileExists(masterEa)) throw new Error("Missing " + masterEa);
@@ -552,6 +588,7 @@
 
         var master = terminals[masterIndex];
         copyFile(masterEa, master.expertsPath);
+        if (fso.FileExists(masterEx4)) copyFile(masterEx4, master.expertsPath);
         log("Master EA copied to: " + master.expertsPath);
 
         var channels = [];
@@ -565,6 +602,7 @@
         result.push("  Experts: " + master.expertsPath);
         result.push("");
         result.push("Slaves:");
+        result.push("  Mode = " + (mode === "aggressive" ? "Aggressive Risk + BE" : "Normal Copy"));
         for (var i = 0; i < slaves.length; i++) {
           var slave = terminals[slaves[i]];
           var channel = prefix + (startNumber + i);
@@ -577,7 +615,15 @@
 
           ensureFolderDeep(commonCopyBus + "\\" + channel);
           copyFile(slaveEa, slave.expertsPath);
-          log("Slave EA copied to: " + slave.expertsPath);
+          if (fso.FileExists(slaveEx4)) copyFile(slaveEx4, slave.expertsPath);
+          if (mode === "aggressive") {
+            copyFileAs(slaveEa, slave.expertsPath, "Slave_Copy_Pips_MT4_aggressive.mq4");
+            if (fso.FileExists(slaveEx4)) {
+              copyFileAs(slaveEx4, slave.expertsPath, "Slave_Copy_Pips_MT4_aggressive.ex4");
+            }
+            log("Legacy aggressive EA alias updated for existing charts.");
+          }
+          log("Slave EA copied: " + slaveEaName + " -> " + slave.expertsPath);
           log("Channel folder ready: " + channel);
 
           createJunction(slave.filesPath + "\\CopyBus", commonCopyBus);
@@ -595,14 +641,21 @@
         result.push("");
         result.push("Next steps:");
         result.push("  1. Attach Master_Copy_Pips to the Master MT4 chart.");
-        result.push("  2. Attach Slave_Copy_Pips_MT4 to each Slave MT4 chart.");
+        result.push("  2. Attach " + slaveEaName.replace(".mq4", "") + " to each Slave MT4 chart.");
+        if (mode === "aggressive") {
+          result.push("     Existing Slave_Copy_Pips_MT4_aggressive charts are also updated.");
+        }
         result.push("  3. Set the inputs shown above.");
         result.push("  4. Enable AutoTrading / Algo Trading.");
+        if (mode === "aggressive") {
+          result.push("  5. Review RiskPercent carefully before live trading.");
+        }
 
         var resultText = result.join("\r\n");
         var resultPath = writeSetupResult(resultText);
         document.getElementById("resultBox").innerText =
           "Master SlaveChannels = " + channels.join(",") +
+          "\r\nSlave Mode = " + (mode === "aggressive" ? "Aggressive Risk + BE" : "Normal Copy") +
           "\r\n" + resultLinesForUi.join("\r\n") +
           "\r\nResult saved: " + resultPath;
         log("Setup result saved to: " + resultPath);

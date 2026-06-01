@@ -1,0 +1,27 @@
+MT4 Copier Setup Result
+Generated: Monday, June 1, 2026 10:04:42 PM
+
+Master:
+  FTMO Global Markets MT4 Terminal  |  56EE5B2C...B8B7
+  Experts: C:\Users\r\AppData\Roaming\MetaQuotes\Terminal\56EE5B2C68594C11EBC44B2E705CB8B7\MQL4\Experts
+
+Slaves:
+  Mode = Aggressive Risk + BE
+  Vantage International MT4  |  F1BBCAAC...6C41
+    SlaveChannel = S1
+    Experts: C:\Users\r\AppData\Roaming\MetaQuotes\Terminal\F1BBCAACDA8825381C125EAF07296C41\MQL4\Experts
+    Files: C:\Users\r\AppData\Roaming\MetaQuotes\Terminal\F1BBCAACDA8825381C125EAF07296C41\MQL4\Files
+
+Master EA input:
+  SlaveChannels = S1
+
+CopyBus:
+  C:\Users\r\AppData\Roaming\MetaQuotes\Terminal\Common\Files\CopyBus
+
+Next steps:
+  1. Attach Master_Copy_Pips to the Master MT4 chart.
+  2. Attach Slave_Copy_Pips_MT4_aggressive_risk_be_v3 to each Slave MT4 chart.
+     Existing Slave_Copy_Pips_MT4_aggressive charts are also updated.
+  3. Set the inputs shown above.
+  4. Enable AutoTrading / Algo Trading.
+  5. Review RiskPercent carefully before live trading.
